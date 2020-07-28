@@ -50,16 +50,16 @@ table tr.progress-row .progress {
 table td {
   transition: 100ms ease-out opacity;
 }
-table td.copy {
+table td .copy {
   cursor: pointer;
 }
-table td.copy i.material-icons {
+table td .copy i.material-icons {
   font-size: inherit;
   visibility: hidden;
   position: relative;
   top: 3px;
 }
-table td.copy:hover i.material-icons {
+table td .copy:hover i.material-icons {
   visibility: visible;
 }
 
