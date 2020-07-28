@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8">
+  <title>{{ page.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+        integrity="sha512-UJfAaOlIRtdR+0P6C3KUoTDAxVTuy3lnSXLyLKlHYJlcSU8Juge/mjeaxDNMlw9LgeIotgz5FP8eUQPhX1q10A=="
+        crossorigin="anonymous">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/1.11.1/mapbox-gl.min.css"
+        integrity="sha512-KxWh2zhfqjqLf8V6nej7w8PbXiZuqrQq+PA1EE+73+7dpYbMocKIXKPlq50ZaWPDY5iQcyaX3I4xLUuOWBCCug=="
+        crossorigin="anonymous">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+          integrity="sha512-NiWqa2rceHnN3Z5j6mSAvbwwg3tiwVNxiAQaaSMSXnRRDh5C2mk/+sKQRw8qjV1vN4nf8iK2a0b048PnHbyx+Q=="
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/1.11.1/mapbox-gl.min.js"
+          integrity="sha512-wEDb7Yk+0qUrDN00oxYEAZtDlp1vS//c1MnX2J1DoLBwPi3nyta6mnzljdbVl01c+tlcsOK9hehK/CVj1/C3FA=="
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.min.js"
+          integrity="sha512-EKjCCRjU5ClBwaRb6dGbElFNWJTE7Ek7+PlXelkum5uofPwlf6u2VRch1ty3csFCQn9XdyX89Te8jVg61qtm3Q=="
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/5.1.6/turf.min.js"
+          integrity="sha512-siRTCNQkkHmxAwPkDt8P/TUrtxSBTSxGyD2G+uliEjS7b5uLjAPgQxIwO6JWPaTQ8doAfBHcHPMut84oNdT/2g=="
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wicket/1.3.6/wicket.min.js"
+          integrity="sha512-7V9RlkyO655oDrkJ7kMXAa4Z+DS0+Kq/eXV0ZKWAv9RJtstw7rHJU1/KgpLovGZtL2FaJ9L24w3qa6L/qy3spg=="
+          crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../css/main.css">
+  <script type="module" src="../js/main.mjs"></script>
+</head>
+<body>
+  <main class="container">
+    <h1 class="title">
+      <em class="category">Vodotok</em><br>
+      <span class="name">{{ page.title }}</span>
+    </h1>
+
+    <section class="source">
+      <div class="card horizontal">
+        <div class="card-content white-text">
+          <span class="card-title">Izvorni materijal</span>
+          <p>
+            <strong>{{ page.title }}</strong>
+            možemo naći na <a href="https://geosrbija.rs">Geosrbija</a>
+            portalu <a href="https://rgz.gov.rs">Republičkog geodetskog zavoda</a>
+            pod slojem
+              <strong>Hidrografija</strong> »
+              <strong>Slivovi i vodotokovi</strong> »
+              <strong>Vodotokovi (linija)</strong>,
+            broj sloja 129, pod rednim brojevima
+            <span id="rgz-ids" data-ids="{{ page.rgz_ids | jsonify | html_escape }}">
+              {%- for id in page.rgz_ids -%}
+                {{ id }}
+                {%- if forloop.rindex > 2 %}, {% else %}{% if forloop.rindex == 2 %} i {% endif %}{% endif -%}
+              {%- endfor -%}
+            </span>.
+          </p>
+        </div>
+        <div class="card-image valign-wrapper">
+          <img src="https://geosrbija.rs/wp-content/uploads/img/geosrbija-logo.svg">
+        </div>
+      </div>
+
+      <h3 class="table">Tabela izvornih podataka</h3>
+      <table id="data-rgz" class="header-caps responsive-table">
+        <thead>
+          <tr class="progress-row">
+            <td>
+              <div class="progress">
+                <div class="indeterminate"></div>
+              </div>
+            </td>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="geo">
+      <div id="map" class="z-depth-1"></div>
+
+      <h2>Geografski podaci</h2>
+      <p>
+        WKT podaci iz prethodne tabele su u SRB_ETRS89 prostornom referentnom sistemu
+        (<a href="https://epsg.io/8682">EPSG:8682</a>, UTM zona 34N),
+        u skladu sa sledećim propisima:
+      </p>
+      <ol>
+        <li>
+          Pravilnik za osnovne geodetske radove
+          (<a href="https://www.pravno-informacioni-sistem.rs/SlGlasnikPortal/eli/rep/sgrs/drugidrzavniorganiorganizacije/pravilnik/2012/19/1/reg">19/2012-29, 80/2018-64</a>)
+        </li>
+        <li>
+          Pravilnik o primeni tehnologije globalnog navigacionog sistema u oblastima državnog premera i katastra
+          (<a href="https://www.pravno-informacioni-sistem.rs/SlGlasnikPortal/eli/rep/sgrs/drugidrzavniorganiorganizacije/pravilnik/2017/72/2/reg">72/2017-51</a>)
+        </li>
+      </ol>
+      <p>
+        Ta polja ovde pretvaramo prvo u
+        <a href="https://geojson.org">GeoJSON format</a>
+        (<a href="https://tools.ietf.org/html/rfc7946">RFC 7946</a>) za lakšu obradu, a potom u
+        <a href="https://en.wikipedia.org/wiki/World_Geodetic_System">WGS84</a>
+        referentni sistem za bolju kompatibilnost i prikaz na mapi.
+      </p>
+
+      <h3>Povezanost</h3>
+      <p>
+        Redni brojevi pojedinih delova vodotoka su povezani u sledećem redosledu:
+      </p>
+      <ul id="ordering"><li>&hellip;</li></ul>
+
+      <p>
+        Ukupna dužina vodotoka na teritoriji Republike Srbije je
+        <span id="length">? km</span>, a udaljenost između početka i kraja
+        vodotoka (na teritoriji RS) je <span id="distance">? km</span>.
+      </p>
+
+      <p>
+        Spojena GeoJSON datoteka koja sadrži <code>FeatureCollection</code>
+        objekat sa pojedinim delovima vodotoka u <code>LineSegment</code>
+        obliku, u gore navedenom redosledu:
+
+        <span id="geojson">&hellip;</span>
+      </p>
+
+      <p>
+        Spojena GeoJSON datoteka koja sadrži sve delove vodotoka u jednom
+        <code>LineSegment</code> objektu:
+
+        <span id="geojson-merged">&hellip;</span>
+      </p>
+
+      <h3 class="table">Tabela geografskih podataka</h3>
+      <table id="data-geo" class="header-caps responsive-table">
+        <thead>
+          <tr class="progress-row">
+            <td>
+              <div class="progress">
+                <div class="indeterminate"></div>
+              </div>
+            </td>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

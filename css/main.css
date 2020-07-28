@@ -1,0 +1,118 @@
+/* Title */
+h1.title {
+  text-align: center;
+}
+h1.title .category {
+  font-size: 32px;
+  font-style: inherit;
+  text-transform: uppercase;
+}
+h1.title .name::before {
+  content: "\201e";
+}
+h1.title .name::after {
+  content: "\201d";
+}
+
+/* Content */
+section {
+  margin-top: 32px;
+}
+section h2 {
+  font-size: 24px;
+}
+section h3 {
+  font-size: 20px;
+}
+
+/* Cards */
+.card {
+  margin: 8px -24px 16px;
+}
+.card a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Tables */
+table.header-caps thead {
+  text-transform: capitalize;
+}
+table thead tr {
+  border: none;
+}
+table tr.progress-row td {
+  padding: 0;
+}
+table tr.progress-row .progress {
+  margin: 0;
+}
+table td {
+  transition: 100ms ease-out opacity;
+}
+table td.copy {
+  cursor: pointer;
+}
+table td.copy i.material-icons {
+  font-size: inherit;
+  visibility: hidden;
+  position: relative;
+  top: 3px;
+}
+table td.copy:hover i.material-icons {
+  visibility: visible;
+}
+
+th.id,
+td.id {
+  width: 64px;
+  text-align: right;
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+td.id::after {
+  content: ".";
+}
+@media only screen and (max-width: 992px) {
+  table.responsive-table th.id,
+  table.responsive-table td.id {
+    width: initial;
+    border-right: none;
+  }
+  table.responsive-table tr.progress-row {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    right: 0;
+    padding: 0;
+  }
+}
+
+/* Section: Source material */
+section.source .card {
+  background: #074b64;
+}
+section.source .card .card-image {
+  min-width: 144px;
+}
+
+/* Section: Geographic data */
+#map {
+  width: 100%;
+  height: 480px;
+}
+#ordering {
+  text-align: center;
+}
+#ordering li {
+  display: inline-block;
+}
+#ordering li+li::before {
+  content: "\2192";
+}
+section.geo table tbody tr td:not([data-it]) {
+  font-family: monospace;
+}
+section.geo .card .material-icons {
+  color: white;
+  font-size: 128px;
+}

@@ -1,0 +1,8 @@
+markdown: kramdown
+
+sass:
+  style: compressed
+
+exclude:
+- LICENSE
+- README.md
