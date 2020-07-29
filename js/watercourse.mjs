@@ -54,14 +54,14 @@ function sortByLinkage(geoJSON) {
   geoJSON.features.sort((a, b) => ids.indexOf(a.properties.id) - ids.indexOf(b.properties.id));
 }
 
-function initMap(map, geoJSON) {
+function initMap(map, data) {
   const init = () => {
-    map.fitBounds(turf.bbox(geoJSON), {
+    map.fitBounds(turf.bbox(data), {
       padding: 24,
     });
     map.addSource("river", {
       type: "geojson",
-      data: geoJSON,
+      data: data,
     });
     map.addLayer({
       id: "river",
