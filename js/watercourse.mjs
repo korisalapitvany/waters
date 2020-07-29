@@ -24,146 +24,6 @@ const typos = {
   "Vodotoci I reda": "Vodotoci Ⅰ reda",
 }
 
-function getIDs() {
-  return JSON.parse(document.getElementById("rgz-ids").innerText)
-    .sort((a, b) => a - b);
-}
-
-function sortByLinkage(geoJSON) {
-  const links = {};
-  geoJSON.features.forEach((a) => {
-    geoJSON.features.forEach((b) => {
-      if (a !== b &&
-          turf.booleanEqual(turf.point(a.geometry.coordinates[a.geometry.coordinates.length-1]),
-                            turf.point(b.geometry.coordinates[0]))) {
-        links[a.properties.id] = b.properties.id;
-      }
-    });
-  });
-
-  let last = Object.values(links).filter((id) => !links.hasOwnProperty(id)).pop().toString();
-  const inverse = Object.fromEntries(Object.entries(links).map(a => a.reverse()));
-  const reverse = [last];
-  while (inverse.hasOwnProperty(last)) {
-    last = inverse[last];
-    reverse.push(last);
-  }
-  const ids = reverse.reverse().map((id) => parseInt(id, 10));
-
-  // Re-order GeoJSON features.
-  geoJSON.features.sort((a, b) => ids.indexOf(a.properties.id) - ids.indexOf(b.properties.id));
-}
-
-function initMap(map, data) {
-  const init = () => {
-    map.fitBounds(turf.bbox(data), {
-      padding: 24,
-    });
-    map.addSource("river", {
-      type: "geojson",
-      data: data,
-    });
-    map.addLayer({
-      id: "river",
-      type: "line",
-      source: "river",
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#03a9f4",  // light-blue
-        "line-width": 4,
-      },
-    });
-  };
-  if (!map.loaded()) {
-    map.on("load", init);
-  } else {
-    init();
-  }
-}
-
-function showStats(geoJSON) {
-  showOrdering(geoJSON);
-  showDistance(geoJSON);
-  showLength(geoJSON);
-}
-
-function showOrdering(geoJSON) {
-  const ul = document.getElementById("ordering");
-  ul.firstElementChild.remove();
-  geoJSON.features.map((feature) => feature.properties.id).forEach((id) => {
-    const li = document.createElement("li");
-    li.innerText = id;
-    ul.appendChild(li);
-  });
-}
-
-function showDistance(geoJSON) {
-  const firstLine = geoJSON.features[0].geometry;
-  const lastLine = geoJSON.features[geoJSON.features.length-1].geometry;
-  document.getElementById("distance").innerText = `${
-    turf.distance(turf.point(firstLine.coordinates[0]),
-                  turf.point(lastLine.coordinates[lastLine.coordinates.length-1]))
-      .toFixed(2)
-  } km`;
-}
-
-function showLength(geoJSON) {
-  const distance = geoJSON.features
-    .map((feature) => feature.geometry)
-    .reduce((sum, geometry) => turf.length(geometry) + sum, 0);
-  document.getElementById("length").innerText = `${
-    distance.toFixed(2)
-  } km`;
-}
-
-function addCopyCell(td, abbrev, text, delay) {
-  if (navigator.clipboard) {
-    const span = document.createElement("span");
-    span.innerText = abbrev;
-    span.className = "copy";
-    const tooltip = M.Tooltip.init(span, {
-      html: "Kopiraj",
-      position: "right",
-      margin: 0,
-    });
-    const copy = document.createElement("i");
-    copy.className = "material-icons";
-    copy.innerText = "content_copy";
-    span.innerText += " ";
-    span.appendChild(copy);
-    span.addEventListener("click", () => {
-      navigator.clipboard.writeText(text);
-      tooltip.tooltipEl.querySelector(".tooltip-content").innerText = "Kopirano!";
-      copy.innerText = "done";
-      span.addEventListener("mouseleave", () => {
-        copy.innerText = "content_copy";
-      });
-    });
-    td.appendChild(span);
-  } else {
-    td.innerText = abbrev;
-  }
-  doneLoading(td, delay);
-}
-
-function doneLoading(el, delay) {
-  setTimeout(() => {
-    el.classList.remove("loading");
-  }, delay);
-}
-
-function loadTemplate(ids, template) {
-  document.getElementById("content").innerHTML = template({
-    rgz_ids: ids,
-    rgz_ids_text: ids.join(", ").replace(/,\s([^,]+)$/, " i $1"),
-    title: document.title,
-    columns: layers[129].columns,
-  });
-}
-
 export default function WaterCourse(template) {
   const ids = getIDs();
   loadTemplate(ids, template);
@@ -275,4 +135,145 @@ export default function WaterCourse(template) {
       }
     });
   });
+}
+
+function getIDs() {
+  return JSON.parse(document.getElementById("rgz-ids").innerText)
+    .sort((a, b) => a - b);
+}
+
+function loadTemplate(ids, template) {
+  document.getElementById("content").innerHTML = template({
+    rgz_ids: ids,
+    rgz_ids_text: ids.join(", ").replace(/,\s([^,]+)$/, " i $1"),
+    title: document.title,
+    columns: layers[129].columns,
+    slug: location.pathname.split(/\/+/).filter((segment) => segment).pop(),
+  });
+}
+
+function initMap(map, data) {
+  const init = () => {
+    map.fitBounds(turf.bbox(data), {
+      padding: 24,
+    });
+    map.addSource("river", {
+      type: "geojson",
+      data: data,
+    });
+    map.addLayer({
+      id: "river",
+      type: "line",
+      source: "river",
+      layout: {
+        "line-join": "round",
+        "line-cap": "round",
+      },
+      paint: {
+        "line-color": "#03a9f4",  // light-blue
+        "line-width": 4,
+      },
+    });
+  };
+  if (!map.loaded()) {
+    map.on("load", init);
+  } else {
+    init();
+  }
+}
+
+function sortByLinkage(geoJSON) {
+  const links = {};
+  geoJSON.features.forEach((a) => {
+    geoJSON.features.forEach((b) => {
+      if (a !== b &&
+          turf.booleanEqual(turf.point(a.geometry.coordinates[a.geometry.coordinates.length-1]),
+                            turf.point(b.geometry.coordinates[0]))) {
+        links[a.properties.id] = b.properties.id;
+      }
+    });
+  });
+
+  let last = Object.values(links).filter((id) => !links.hasOwnProperty(id)).pop().toString();
+  const inverse = Object.fromEntries(Object.entries(links).map(a => a.reverse()));
+  const reverse = [last];
+  while (inverse.hasOwnProperty(last)) {
+    last = inverse[last];
+    reverse.push(last);
+  }
+  const ids = reverse.reverse().map((id) => parseInt(id, 10));
+
+  // Re-order GeoJSON features.
+  geoJSON.features.sort((a, b) => ids.indexOf(a.properties.id) - ids.indexOf(b.properties.id));
+}
+
+function showStats(geoJSON) {
+  showOrdering(geoJSON);
+  showDistance(geoJSON);
+  showLength(geoJSON);
+}
+
+function showOrdering(geoJSON) {
+  const ul = document.getElementById("ordering");
+  ul.firstElementChild.remove();
+  geoJSON.features.map((feature) => feature.properties.id).forEach((id) => {
+    const li = document.createElement("li");
+    li.innerText = id;
+    ul.appendChild(li);
+  });
+}
+
+function showDistance(geoJSON) {
+  const firstLine = geoJSON.features[0].geometry;
+  const lastLine = geoJSON.features[geoJSON.features.length-1].geometry;
+  document.getElementById("distance").innerText = `${
+    turf.distance(turf.point(firstLine.coordinates[0]),
+                  turf.point(lastLine.coordinates[lastLine.coordinates.length-1]))
+      .toFixed(2)
+  } km`;
+}
+
+function showLength(geoJSON) {
+  const distance = geoJSON.features
+    .map((feature) => feature.geometry)
+    .reduce((sum, geometry) => turf.length(geometry) + sum, 0);
+  document.getElementById("length").innerText = `${
+    distance.toFixed(2)
+  } km`;
+}
+
+function addCopyCell(td, abbrev, text, delay) {
+  if (navigator.clipboard) {
+    const span = document.createElement("span");
+    span.innerText = abbrev;
+    span.className = "copy";
+    const tooltip = M.Tooltip.init(span, {
+      html: "Kopiraj",
+      position: "right",
+      margin: 0,
+    });
+    const copy = document.createElement("i");
+    copy.className = "material-icons";
+    copy.innerText = "content_copy";
+    span.innerText += " ";
+    span.appendChild(copy);
+    span.addEventListener("click", () => {
+      navigator.clipboard.writeText(text);
+      tooltip.tooltipEl.querySelector(".tooltip-content").innerText = "Kopirano!";
+      copy.innerText = "done";
+      span.addEventListener("mouseleave", () => {
+        copy.innerText = "content_copy";
+      });
+    });
+    td.appendChild(span);
+  } else {
+    td.innerText = abbrev;
+  }
+  doneLoading(td, delay);
+}
+
+function doneLoading(el, delay) {
+  setTimeout(() => {
+    el.classList.remove("loading");
+  }, delay);
 }
