@@ -24,8 +24,6 @@ const typos = {
   "Vodotoci I reda": "Vodotoci Ⅰ reda",
 }
 
-const geoColumns = ["objectid", "wkt", "geo_json", "distance", "length"];
-
 function getIDs() {
   return JSON.parse(document.getElementById("rgz-ids").innerText)
     .sort((a, b) => a - b);
