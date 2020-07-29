@@ -51,7 +51,7 @@ function sortByLinkage(geoJSON) {
   const ids = reverse.reverse().map((id) => parseInt(id, 10));
 
   // Re-order GeoJSON features.
-  geoJSON.features.sort((a, b) => ids.indexOf(a.properties.id) < ids.indexOf(b.properties.id) ? -1 : 1);
+  geoJSON.features.sort((a, b) => ids.indexOf(a.properties.id) - ids.indexOf(b.properties.id));
 }
 
 function initMap(map, geoJSON) {
