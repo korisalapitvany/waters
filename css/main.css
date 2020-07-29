@@ -112,6 +112,12 @@ section.source .card .card-image {
 #ordering li+li::before {
   content: "\2192";
 }
+section.geo ul.download {
+  margin-left: 24px;
+}
+section.geo ul.download li + li {
+  margin-top: 16px;
+}
 section.geo table tbody tr td:not([data-it]) {
   font-family: monospace;
 }

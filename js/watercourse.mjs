@@ -132,6 +132,9 @@ export default function WaterCourse(template) {
         sortByLinkage(mapData);
         initMap(map, mapData);
         showStats(mapData);
+
+        const merged = toLineString(mapData);
+        showDLs(mapData, merged);
       }
     });
   });
@@ -207,10 +210,29 @@ function sortByLinkage(geoJSON) {
   geoJSON.features.sort((a, b) => ids.indexOf(a.properties.id) - ids.indexOf(b.properties.id));
 }
 
+function toLineString(geoJSON) {
+  return turf.lineString(
+    toCoordinates(geoJSON)
+      .reduce((a, b) => a.concat(b), []));
+}
+
+function toMultiLineString(geoJSON) {
+  return turf.multiLineString(toCoordinates(geoJSON));
+}
+
+function toCoordinates(geoJSON) {
+  return geoJSON.features
+    .map((feature) => feature.geometry.coordinates);
+}
+
+
 function showStats(geoJSON) {
   showOrdering(geoJSON);
   showDistance(geoJSON);
   showLength(geoJSON);
+}
+
+function showDLs(geoJSON) {
 }
 
 function showOrdering(geoJSON) {
