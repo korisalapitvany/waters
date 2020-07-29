@@ -39,29 +39,35 @@ Object.entries({
   document.body.appendChild(script);
 });
 
+function ready(obj) {
+  return new Promise((resolve) => {
+    const check = () => {
+      if (window.hasOwnProperty(obj)) {
+        resolve(window[obj]);
+      } else {
+        setTimeout(check, 10);
+      }
+    };
+    check();
+  });
+}
+
 function init() {
-  LoadTemplate("watercourse")
-    .then(WaterCourse);
+  ready("Handlebars")
+    .then(() => Promise.all([
+      LoadTemplate("watercourse"),
+    ].concat([
+      "M",
+      "Wkt",
+      "mapboxgl",
+      "proj4",
+      "turf",
+    ].map(ready))))
+    .then(([template]) => WaterCourse(template));
 }
 
-function ready() {
-  return [
-    "Handlebars",
-    "M",
-    "Wkt",
-    "mapboxgl",
-    "proj4",
-    "turf",
-  ].map((obj) => window.hasOwnProperty(obj)).reduce((a, b) => a && b, true);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
 }
-
-const i = setInterval(() => {
-  if (ready()) {
-    clearInterval(i);
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", init);
-    } else {
-      init();
-    }
-  }
-}, 5);
