@@ -6,3 +6,5 @@ sass:
 exclude:
 - LICENSE
 - README.md
+- node_modules
+- package-lock.json

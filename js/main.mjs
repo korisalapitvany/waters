@@ -1,3 +1,4 @@
+import LoadTemplate from "./template.mjs";
 import WaterCourse from "./watercourse.mjs";
 
 const cdnjs = "https://cdnjs.cloudflare.com/ajax/libs/";
@@ -24,6 +25,7 @@ Object.entries({
 /* Load JavaScript dependencies. */
 Object.entries({
   "Turf.js/5.1.6/turf": "siRTCNQkkHmxAwPkDt8P/TUrtxSBTSxGyD2G+uliEjS7b5uLjAPgQxIwO6JWPaTQ8doAfBHcHPMut84oNdT/2g==",
+  "handlebars.js/4.7.6/handlebars.runtime": "PiK8DvgLRPC/0hHE/EydOe4k7uLCY4EW6j2xBbkQSPFoEGaG6f/6ocqRcDf3yor1X5AV88mgQIxqh2lgzmX1IA==",
   "mapbox-gl/1.11.1/mapbox-gl": "wEDb7Yk+0qUrDN00oxYEAZtDlp1vS//c1MnX2J1DoLBwPi3nyta6mnzljdbVl01c+tlcsOK9hehK/CVj1/C3FA==",
   "materialize/1.0.0/js/materialize": "NiWqa2rceHnN3Z5j6mSAvbwwg3tiwVNxiAQaaSMSXnRRDh5C2mk/+sKQRw8qjV1vN4nf8iK2a0b048PnHbyx+Q==",
   "proj4js/2.6.2/proj4": "EKjCCRjU5ClBwaRb6dGbElFNWJTE7Ek7+PlXelkum5uofPwlf6u2VRch1ty3csFCQn9XdyX89Te8jVg61qtm3Q==",
@@ -38,11 +40,13 @@ Object.entries({
 });
 
 function init() {
-  WaterCourse();
+  LoadTemplate("watercourse")
+    .then(WaterCourse);
 }
 
 function ready() {
   return [
+    "Handlebars",
     "M",
     "Wkt",
     "mapboxgl",

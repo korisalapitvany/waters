@@ -1,5 +1,7 @@
-_site/
-.sass-cache/
+.*.sw?
 .jekyll-cache/
 .jekyll-metadata
-.*.sw?
+.sass-cache/
+_site/
+node_modules/
+package-lock.json

@@ -47,6 +47,9 @@ table tr.progress-row td {
 table tr.progress-row .progress {
   margin: 0;
 }
+table td.loading {
+  opacity: 0;
+}
 table td {
   transition: 100ms ease-out opacity;
 }

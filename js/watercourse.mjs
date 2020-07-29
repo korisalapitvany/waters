@@ -156,12 +156,28 @@ function addCopyCell(td, abbrev, text, delay) {
   } else {
     td.innerText = abbrev;
   }
+  doneLoading(td, delay);
+}
+
+function doneLoading(el, delay) {
   setTimeout(() => {
-    td.style.opacity = 1;
+    el.classList.remove("loading");
   }, delay);
 }
 
-export default function WaterCourse() {
+function loadTemplate(ids, template) {
+  document.getElementById("content").innerHTML = template({
+    rgz_ids: ids,
+    rgz_ids_text: ids.join(", ").replace(/,\s([^,]+)$/, " i $1"),
+    title: document.title,
+    columns: layers[129].columns,
+  });
+}
+
+export default function WaterCourse(template) {
+  const ids = getIDs();
+  loadTemplate(ids, template);
+
   const rgzTable = document.getElementById("data-rgz");
   const rgzHeader = rgzTable.querySelector("thead");
   const rgzBody = rgzTable.querySelector("tbody");
@@ -175,31 +191,6 @@ export default function WaterCourse() {
   const geoProgress = geoHeader.querySelector(".progress");
   const geoProgressBar = geoProgress.firstElementChild;
   geoProgress.parentElement.colSpan = layers[129].columns.length;
-
-  {
-    const thr = document.createElement("tr");
-    layers[129].columns.forEach((column) => {
-      const th = document.createElement("th");
-      th.innerText = columnText[column] || column;
-      if (column === "objectid") {
-        th.className = "id";
-      }
-      thr.appendChild(th);
-    });
-    rgzHeader.insertBefore(thr, rgzProgress.parentElement.parentElement);
-  }
-  {
-    const thr = document.createElement("tr");
-    geoColumns.forEach((column) => {
-      const th = document.createElement("th");
-      th.innerText = columnText[column] || column;
-      if (column === "objectid") {
-        th.className = "id";
-      }
-      thr.appendChild(th);
-    });
-    geoHeader.insertBefore(thr, geoProgress.parentElement.parentElement);
-  }
 
   mapboxgl.accessToken = 'pk.eyJ1IjoiYXR0aWxhb2xhaCIsImEiOiJVUXVXOXBBIn0.3kVsQJB-q0rnLfbmxvM-zg';
   const map = new mapboxgl.Map({
@@ -216,43 +207,8 @@ export default function WaterCourse() {
     map.fitBounds(RS.bounds);
   });
 
-  const ids = getIDs();
   let pending = ids.length;
-
   ids.forEach((id) => {
-    {
-      const tbr = document.createElement("tr");
-      tbr.dataset.id = id;
-      layers[129].columns.forEach((column) => {
-        const td = document.createElement("td");
-        if (column === "objectid") {
-          td.className = "id";
-          td.innerText = id;
-        } else {
-          td.dataset.key = column;
-          td.style.opacity = 0;
-        }
-        tbr.appendChild(td);
-      });
-      rgzBody.appendChild(tbr);
-    }
-    {
-      const tbr = document.createElement("tr");
-      tbr.dataset.id = id;
-      geoColumns.forEach((column) => {
-        const td = document.createElement("td");
-        if (column === "objectid") {
-          td.className = "id";
-          td.innerText = id;
-        } else {
-          td.dataset.key = column;
-          td.style.opacity = 0;
-        }
-        tbr.appendChild(td);
-      });
-      geoBody.appendChild(tbr);
-    }
-
     ReadAny(129, id).then((records) => {
       pending--;
       rgzProgressBar.className = "determinate";
@@ -289,9 +245,7 @@ export default function WaterCourse() {
             return
           }
           td.innerText = typos[value] || value;
-          setTimeout(() => {
-            td.style.opacity = 1;
-          }, delay);
+          doneLoading(td, delay);
           delay += 50;
       });
 
@@ -313,18 +267,14 @@ export default function WaterCourse() {
                         turf.point(geoJSON.coordinates[geoJSON.coordinates.length-1]))
             .toFixed(2)
         } km`;
-        setTimeout(() => {
-          td.style.opacity = 1;
-        }, delay);
+        doneLoading(td, delay);
         delay += 50;
       }
       {
         const td = geoBody.querySelector(`tr[data-id="${id}"]>td[data-key="length"]`);
         td.className = "right-align";
         td.innerText = `${turf.length(geoJSON).toFixed(2)} km`;
-        setTimeout(() => {
-          td.style.opacity = 1;
-        }, delay);
+        doneLoading(td, delay);
         delay += 50;
       }
 
