@@ -35,7 +35,8 @@ const typos = {
 const geoColumns = ["objectid", "wkt", "geo_json", "distance", "length"];
 
 function getIDs() {
-  return JSON.parse(document.getElementById("rgz-ids").dataset.ids).sort((a, b) => a - b);
+  return JSON.parse(document.getElementById("rgz-ids").innerText)
+    .sort((a, b) => a - b);
 }
 
 function sortByLinkage(geoJSON) {

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+  <script id="rgz-ids" type="application/json">{{ page.rgz_ids | jsonify | html_escape }}</script>
   <main class="container">
     <h1 class="title">
       <em class="category">Vodotok</em><br>
@@ -25,12 +26,10 @@
               <strong>Slivovi i vodotokovi</strong> »
               <strong>Vodotokovi (linija)</strong>,
             broj sloja 129, pod rednim brojevima
-            <span id="rgz-ids" data-ids="{{ page.rgz_ids | jsonify | html_escape }}">
-              {%- for id in page.rgz_ids -%}
-                {{ id }}
-                {%- if forloop.rindex > 2 %}, {% else %}{% if forloop.rindex == 2 %} i {% endif %}{% endif -%}
-              {%- endfor -%}
-            </span>.
+            {% for id in page.rgz_ids -%}
+              {{ id }}
+              {%- if forloop.rindex > 2 %}, {% else %}{% if forloop.rindex == 2 %} i {% endif %}{% endif -%}
+            {%- endfor %}.
           </p>
         </div>
         <div class="card-image valign-wrapper">
