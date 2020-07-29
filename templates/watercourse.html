@@ -5,56 +5,56 @@
 
 <section class="source">
   <div class="card horizontal">
-  <div class="card-content white-text">
-    <span class="card-title">Izvorni materijal</span>
-    <p>
-    <strong>{{title}}</strong>
-    možemo naći na <a href="https://geosrbija.rs">Geosrbija</a>
-    portalu <a href="https://rgz.gov.rs">Republičkog geodetskog zavoda</a>
-    pod slojem
-      <strong>Hidrografija</strong> »
-      <strong>Slivovi i vodotokovi</strong> »
-      <strong>Vodotokovi (linija)</strong>,
-    broj sloja 129, pod rednim brojevima {{rgz_ids_text}}.
-    </p>
-  </div>
-  <div class="card-image valign-wrapper">
-    <img src="https://geosrbija.rs/wp-content/uploads/img/geosrbija-logo.svg">
-  </div>
+    <div class="card-content white-text">
+      <span class="card-title">Izvorni materijal</span>
+      <p>
+        <strong>{{title}}</strong>
+        možemo naći na <a href="https://geosrbija.rs">Geosrbija</a>
+        portalu <a href="https://rgz.gov.rs">Republičkog geodetskog zavoda</a>
+        pod slojem
+          <strong>Hidrografija</strong> »
+          <strong>Slivovi i vodotokovi</strong> »
+          <strong>Vodotokovi (linija)</strong>,
+        broj sloja 129, pod rednim brojevima {{rgz_ids_text}}.
+      </p>
+    </div>
+    <div class="card-image valign-wrapper">
+      <img src="https://geosrbija.rs/wp-content/uploads/img/geosrbija-logo.svg">
+    </div>
   </div>
 
   <h3 class="table">Tabela izvornih podataka</h3>
   <table id="data-rgz" class="header-caps responsive-table">
-  <thead>
-    <tr>
-      {{#each columns}}
-      {{#if @first}}
-      <th class="id">#</th>
-      {{else}}
-      <th>{{this}}</th>
-      {{/if}}
+    <thead>
+      <tr>
+        {{#each columns}}
+        {{#if @first}}
+        <th class="id">#</th>
+        {{else}}
+        <th>{{this}}</th>
+        {{/if}}
+        {{/each}}
+      </tr>
+      <tr class="progress-row">
+      <td>
+        <div class="progress">
+          <div class="indeterminate"></div>
+        </div>
+      </td>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rgz_ids}}
+      <tr data-id="{{this}}">
+        <td class="id">{{this}}</td>
+        {{#each @root.columns}}
+        {{#unless @first}}
+        <td data-key="{{this}}" class="loading"></td>
+        {{/unless}}
+        {{/each}}
+      </tr>
       {{/each}}
-    </tr>
-    <tr class="progress-row">
-    <td>
-      <div class="progress">
-      <div class="indeterminate"></div>
-      </div>
-    </td>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each rgz_ids}}
-    <tr data-id="{{this}}">
-      <td class="id">{{this}}</td>
-      {{#each @root.columns}}
-      {{#unless @first}}
-      <td data-key="{{this}}" class="loading"></td>
-      {{/unless}}
-      {{/each}}
-    </tr>
-    {{/each}}
-  </tbody>
+    </tbody>
   </table>
 </section>
 
@@ -63,83 +63,83 @@
 
   <h2>Geografski podaci</h2>
   <p>
-  WKT podaci iz prethodne tabele su u SRB_ETRS89 prostornom referentnom sistemu
-  (<a href="https://epsg.io/8682">EPSG:8682</a>, UTM zona 34N),
-  u skladu sa sledećim propisima:
+    WKT podaci iz prethodne tabele su u SRB_ETRS89 prostornom referentnom sistemu
+    (<a href="https://epsg.io/8682">EPSG:8682</a>, UTM zona 34N),
+    u skladu sa sledećim propisima:
   </p>
   <ol>
-  <li>
-    Pravilnik za osnovne geodetske radove
-    (<a href="https://www.pravno-informacioni-sistem.rs/SlGlasnikPortal/eli/rep/sgrs/drugidrzavniorganiorganizacije/pravilnik/2012/19/1/reg">19/2012-29, 80/2018-64</a>)
-  </li>
-  <li>
-    Pravilnik o primeni tehnologije globalnog navigacionog sistema u oblastima državnog premera i katastra
-    (<a href="https://www.pravno-informacioni-sistem.rs/SlGlasnikPortal/eli/rep/sgrs/drugidrzavniorganiorganizacije/pravilnik/2017/72/2/reg">72/2017-51</a>)
-  </li>
+    <li>
+      Pravilnik za osnovne geodetske radove
+      (<a href="https://www.pravno-informacioni-sistem.rs/SlGlasnikPortal/eli/rep/sgrs/drugidrzavniorganiorganizacije/pravilnik/2012/19/1/reg">19/2012-29, 80/2018-64</a>)
+    </li>
+    <li>
+      Pravilnik o primeni tehnologije globalnog navigacionog sistema u oblastima državnog premera i katastra
+      (<a href="https://www.pravno-informacioni-sistem.rs/SlGlasnikPortal/eli/rep/sgrs/drugidrzavniorganiorganizacije/pravilnik/2017/72/2/reg">72/2017-51</a>)
+    </li>
   </ol>
   <p>
-  Ta polja ovde pretvaramo prvo u
-  <a href="https://geojson.org">GeoJSON format</a>
-  (<a href="https://tools.ietf.org/html/rfc7946">RFC 7946</a>) za lakšu obradu, a potom u
-  <a href="https://en.wikipedia.org/wiki/World_Geodetic_System">WGS84</a>
-  referentni sistem za bolju kompatibilnost i prikaz na mapi.
+    Ta polja ovde pretvaramo prvo u
+    <a href="https://geojson.org">GeoJSON format</a>
+    (<a href="https://tools.ietf.org/html/rfc7946">RFC 7946</a>) za lakšu obradu, a potom u
+    <a href="https://en.wikipedia.org/wiki/World_Geodetic_System">WGS84</a>
+    referentni sistem za bolju kompatibilnost i prikaz na mapi.
   </p>
 
   <h3>Povezanost</h3>
   <p>
-  Redni brojevi pojedinih delova vodotoka su povezani u sledećem redosledu:
+    Redni brojevi pojedinih delova vodotoka su povezani u sledećem redosledu:
   </p>
   <ul id="ordering"><li>&hellip;</li></ul>
 
   <p>
-  Ukupna dužina vodotoka na teritoriji Republike Srbije je
-  <span id="length">? km</span>, a udaljenost između početka i kraja
-  vodotoka (na teritoriji RS) je <span id="distance">? km</span>.
+    Ukupna dužina vodotoka na teritoriji Republike Srbije je
+    <span id="length">? km</span>, a udaljenost između početka i kraja
+    vodotoka (na teritoriji RS) je <span id="distance">? km</span>.
   </p>
 
   <p>
-  Spojena GeoJSON datoteka koja sadrži <code>FeatureCollection</code>
-  objekat sa pojedinim delovima vodotoka u <code>LineSegment</code>
-  obliku, u gore navedenom redosledu:
+    Spojena GeoJSON datoteka koja sadrži <code>FeatureCollection</code>
+    objekat sa pojedinim delovima vodotoka u <code>LineSegment</code>
+    obliku, u gore navedenom redosledu:
 
-  <span id="geojson">&hellip;</span>
+    <span id="geojson">&hellip;</span>
   </p>
 
   <p>
-  Spojena GeoJSON datoteka koja sadrži sve delove vodotoka u jednom
-  <code>LineSegment</code> objektu:
+    Spojena GeoJSON datoteka koja sadrži sve delove vodotoka u jednom
+    <code>LineSegment</code> objektu:
 
-  <span id="geojson-merged">&hellip;</span>
+    <span id="geojson-merged">&hellip;</span>
   </p>
 
   <h3 class="table">Tabela geografskih podataka</h3>
   <table id="data-geo" class="header-caps responsive-table">
-  <thead>
-    <tr>
-      <th class="id">#</th>
-      <th>WKT (SRB_ETRS89)</th>
-      <th>GeoJSON (WGS84)</th>
-      <th>Udaljenost</th>
-      <th>Dužina</th>
-    </tr>
-    <tr class="progress-row">
-    <td>
-      <div class="progress">
-      <div class="indeterminate"></div>
-      </div>
-    </td>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each rgz_ids}}
-    <tr data-id="{{this}}">
-      <td class="id">{{this}}</td>
-      <td data-key="wkt" class="loading"></td>
-      <td data-key="geo_json" class="loading"></td>
-      <td data-key="distance" class="loading"></td>
-      <td data-key="length" class="loading"></td>
-    </tr>
-    {{/each}}
-  </tbody>
+    <thead>
+      <tr>
+        <th class="id">#</th>
+        <th>WKT (SRB_ETRS89)</th>
+        <th>GeoJSON (WGS84)</th>
+        <th>Udaljenost</th>
+        <th>Dužina</th>
+      </tr>
+      <tr class="progress-row">
+      <td>
+        <div class="progress">
+        <div class="indeterminate"></div>
+        </div>
+      </td>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rgz_ids}}
+      <tr data-id="{{this}}">
+        <td class="id">{{this}}</td>
+        <td data-key="wkt" class="loading"></td>
+        <td data-key="geo_json" class="loading"></td>
+        <td data-key="distance" class="loading"></td>
+        <td data-key="length" class="loading"></td>
+      </tr>
+      {{/each}}
+    </tbody>
   </table>
 </section>
