@@ -19,14 +19,6 @@ RS.centre = [
   (RS.bounds[0][1] + RS.bounds[1][1]) / 2,
 ];
 
-const columnText = {
-  objectid: "#",
-  wkt: "WKT (SRB_ETRS89)",
-  geo_json: "GeoJSON (WGS84)",
-  distance: "Udaljenost",
-  length: "Dužina",
-};
-
 const typos = {
   Vestacki: "Veštački",
   "Vodotoci I reda": "Vodotoci Ⅰ reda",
