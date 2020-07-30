@@ -10,15 +10,15 @@ const styles = {
   map: "mapbox://styles/mapbox/streets-v11",
   landscape: "mapbox://styles/mapbox/outdoors-v11",
   satellite: "mapbox://styles/mapbox/satellite-v9",
-  brightness_4: "mapbox://styles/mapbox/dark-v10",
   brightness_5: "mapbox://styles/mapbox/light-v10",
+  brightness_4: "mapbox://styles/mapbox/dark-v10",
 };
 const styleNames = {
   map: "Mapa",
   landscape: "Mapa terena",
   satellite: "Satelit",
-  brightness_4: "Tamna mapa",
   brightness_5: "Svetla mapa",
+  brightness_4: "Tamna mapa",
 };
 
 let map = null;
