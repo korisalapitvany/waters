@@ -48,7 +48,7 @@ export function CreateMap() {
       this._container.appendChild(btn);
 
       const i = document.createElement("i");
-      i.className = "material-icons fit";
+      i.className = "material-icons";
       i.innerText = "zoom_out_map";
       btn.appendChild(i);
 
