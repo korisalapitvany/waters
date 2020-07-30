@@ -88,7 +88,7 @@ export default function WaterCourse(template) {
 
       addCopyCell(
         geoBody.querySelector(`tr[data-id="${id}"]>td[data-key="wkt"]`),
-        record.geom_wkt.replace(/\(.*\)/, '(…)'),
+        record.geom_wkt.replace(/\(.*\)/, "(…)"),
         record.geom_wkt,
         50);
       addCopyCell(

@@ -7,7 +7,7 @@ RS.centre = [
 ];
 
 export function CreateMap() {
-  mapboxgl.accessToken = 'pk.eyJ1IjoiYXR0aWxhb2xhaCIsImEiOiJVUXVXOXBBIn0.3kVsQJB-q0rnLfbmxvM-zg';
+  mapboxgl.accessToken = "pk.eyJ1IjoiYXR0aWxhb2xhaCIsImEiOiJVUXVXOXBBIn0.3kVsQJB-q0rnLfbmxvM-zg";
 
   class FullscreenControl extends mapboxgl.FullscreenControl {
     onAdd(map) {
