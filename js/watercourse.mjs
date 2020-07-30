@@ -1,6 +1,8 @@
 import layers from "./geosrbija/layers.mjs";
 import { ReadAny } from "./geosrbija/dataview.mjs";
 
+const slug = location.pathname.split(/\/+/).filter((segment) => segment).pop();
+
 const ETRS89 = (() => {
   let p = null;
   return () => {
@@ -52,6 +54,7 @@ export default function WaterCourse(template) {
   const mapData = {
     type: "FeatureCollection",
     features: [],
+    properties: {id: slug},
   };
   map.on("load", () => {
     map.fitBounds(RS.bounds);
@@ -132,9 +135,7 @@ export default function WaterCourse(template) {
         sortByLinkage(mapData);
         initMap(map, mapData);
         showStats(mapData);
-
-        const merged = toLineString(mapData);
-        showDLs(mapData, merged);
+        initDlButtons(mapData);
       }
     });
   });
@@ -151,7 +152,7 @@ function loadTemplate(ids, template) {
     rgz_ids_text: ids.join(", ").replace(/,\s([^,]+)$/, " i $1"),
     title: document.title,
     columns: layers[129].columns,
-    slug: location.pathname.split(/\/+/).filter((segment) => segment).pop(),
+    slug: slug,
   });
 }
 
@@ -232,7 +233,18 @@ function showStats(geoJSON) {
   showLength(geoJSON);
 }
 
-function showDLs(geoJSON) {
+function initDlButtons(geoJSON) {
+  Object.entries({
+    "dl-feature-collection-line-string": geoJSON,
+    "dl-feature-multi-line-string": toMultiLineString(geoJSON),
+    "dl-feature-line-string": toLineString(geoJSON),
+  }).forEach(([id, data]) => {
+    const btn = document.getElementById(id);
+    btn.href = `data:text/plain;charset=utf-8,${
+      encodeURIComponent(JSON.stringify(data))
+    }`;
+    btn.download = `${geoJSON.properties.id}.geo.json`;
+  });
 }
 
 function showOrdering(geoJSON) {
