@@ -6,13 +6,76 @@ RS.centre = [
   (RS.bounds[0][1] + RS.bounds[1][1]) / 2,
 ];
 
-let map = null;
-let bounds = RS.bounds;
+const styles = {
+  map: "mapbox://styles/mapbox/streets-v11",
+  landscape: "mapbox://styles/mapbox/outdoors-v11",
+  satellite: "mapbox://styles/mapbox/satellite-v9",
+  brightness_4: "mapbox://styles/mapbox/dark-v10",
+  brightness_5: "mapbox://styles/mapbox/light-v10",
+};
+const styleNames = {
+  map: "Mapa",
+  landscape: "Mapa terena",
+  satellite: "Satelit",
+  brightness_4: "Tamna mapa",
+  brightness_5: "Svetla mapa",
+};
 
-function fitBounds() {
-  map.fitBounds(bounds, {
-    padding: 24,
-  });
+let map = null;
+let mapData = null;
+let mapBounds = RS.bounds;
+let mapStyle = styles.landscape;
+
+class FitBoundsControl {
+  onAdd(map) {
+    const div = document.createElement("div");
+    div.className = "mapboxgl-ctrl-group mapboxgl-ctrl";
+
+    const btn = makeBtn("zoom_out_map", fitBounds);
+    M.Tooltip.init(btn, {
+      html: "Centriranje",
+      position: "left",
+      margin: 0,
+    });
+    div.appendChild(btn);
+
+    return div;
+  }
+
+  getDefaultPosition() {
+    return "bottom-right";
+  }
+}
+
+class ChangeStyleControl {
+  onAdd(map) {
+    const div = document.createElement("div");
+    div.className = "mapboxgl-ctrl-group mapboxgl-ctrl";
+
+    Object.entries(styles).forEach(([icon, style]) => {
+      const btn = makeBtn(icon, () => {
+        if (mapStyle !== style) {
+          hideData();
+          map.setStyle(style);
+          map.on("style.load", showData);
+          mapStyle = style;
+        }
+      });
+      M.Tooltip.init(btn, {
+        html: styleNames[icon],
+        position: "right",
+        margin: 0,
+      });
+      div.appendChild(btn);
+      window.MAP = map;
+    });
+
+    return div;
+  }
+
+  getDefaultPosition() {
+    return "top-left";
+  }
 }
 
 export function CreateMap() {
@@ -24,78 +87,67 @@ export function CreateMap() {
       const btn = el.querySelector("button");
       btn.firstElementChild.remove();
 
-      ["fullscreen", "fullscreen_exit"].map((text) => {
-        const i = document.createElement("i");
-        i.classList.add("material-icons");
-        i.classList.add(text);
-        i.innerText = text;
-        return i;
-      }).forEach(btn.appendChild, btn);
+      ["fullscreen", "fullscreen_exit"]
+        .map(makeIcon)
+        .forEach(btn.appendChild, btn);
 
       return el;
     }
   }
 
-  class FitBoundsControl {
-    onAdd(map) {
-      this._map = map;
-
-      this._container = document.createElement("div");
-      this._container.className = "mapboxgl-ctrl-group mapboxgl-ctrl";
-
-      const btn = document.createElement("button");
-      btn.addEventListener("click", fitBounds);
-      M.Tooltip.init(btn, {
-        html: "Centriranje",
-        position: "left",
-        margin: 0,
-      });
-
-      this._container.appendChild(btn);
-
-      const i = document.createElement("i");
-      i.className = "material-icons";
-      i.innerText = "zoom_out_map";
-      btn.appendChild(i);
-
-      return this._container;
-    }
-
-    onRemove() {
-      this._map = undefined;
-      this._container.parentNode.removeChild(this._container);
-    }
-
-    getDefaultPosition() {
-      return "bottom-right";
-    }
-  }
-
   map = new mapboxgl.Map({
     container: "map",
-    style: "mapbox://styles/mapbox/outdoors-v11",
+    style: mapStyle,
     center: RS.centre,
     zoom: 5,
   });
+  map.addControl(new ChangeStyleControl());
   map.addControl(new FullscreenControl());
   map.addControl(new FitBoundsControl());
   map.on("load", fitBounds);
+  map.on("style.load", showData);
 
   return map;
 }
 
 export function InitMap(map, data) {
   const init = () => {
-    bounds = turf.bbox(data);
+    mapData = data;
+    showData();
     fitBounds();
-    map.addSource("river", {
+    window.MAP = map;
+  };
+  if (!map.loaded()) {
+    map.on("load", init);
+  } else {
+    init();
+  }
+}
+
+function fitBounds() {
+  if (mapData) {
+    mapBounds = turf.bbox(mapData);
+  }
+  map.fitBounds(mapBounds, {
+    padding: 48,
+  });
+}
+
+function showData() {
+  if (!mapData) {
+    return;
+  }
+  if (!map.getSource("watercourse")) {
+    map.addSource("watercourse", {
       type: "geojson",
-      data: data,
+      data: mapData,
     });
+  }
+  if (!map.getLayer("watercourse")) {
     map.addLayer({
-      id: "river",
+      id: "watercourse",
       type: "line",
-      source: "river",
+      source: "watercourse",
       layout: {
         "line-join": "round",
         "line-cap": "round",
@@ -105,10 +157,29 @@ export function InitMap(map, data) {
         "line-width": 4,
       },
     });
-  };
-  if (!map.loaded()) {
-    map.on("load", init);
-  } else {
-    init();
   }
+}
+
+function hideData() {
+  if (map.getLayer("watercourse")) {
+    map.removeLayer("watercourse");
+  }
+  if (map.getSource("watercourse")) {
+    map.removeSource("watercourse");
+  }
+}
+
+function makeBtn(icon, fn) {
+  const btn = document.createElement("button");
+  btn.appendChild(makeIcon(icon));
+  btn.addEventListener("click", fn);
+  return btn;
+}
+
+function makeIcon(text) {
+  const icon = document.createElement("i");
+  icon.className = "material-icons";
+  icon.classList.add(text);
+  icon.innerText = text;
+  return icon;
 }
