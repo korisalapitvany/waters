@@ -116,7 +116,7 @@ section.source .card .card-image {
   height: auto;
 }
 #map .mapboxgl-ctrl button i {
-  font-size: 36px;
+  font-size: 24px;
   padding: 4px;
 }
 #map .mapboxgl-ctrl-shrink .fullscreen,
