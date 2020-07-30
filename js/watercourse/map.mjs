@@ -45,6 +45,12 @@ export function CreateMap() {
 
       const btn = document.createElement("button");
       btn.addEventListener("click", fitBounds);
+      M.Tooltip.init(btn, {
+        html: "Centriranje",
+        position: "left",
+        margin: 0,
+      });
+
       this._container.appendChild(btn);
 
       const i = document.createElement("i");
