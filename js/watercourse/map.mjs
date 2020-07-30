@@ -75,8 +75,6 @@ export function CreateMap() {
   map.addControl(new FitBoundsControl());
   map.on("load", fitBounds);
 
-  window.MAP = map;
-
   return map;
 }
 
