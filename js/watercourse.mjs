@@ -157,6 +157,24 @@ function loadTemplate(ids, template) {
 }
 
 function initMap(map, data) {
+  class FullscreenControl extends mapboxgl.FullscreenControl {
+    onAdd(map) {
+      const el = super.onAdd(map);
+      const btn = el.querySelector("button");
+      btn.firstElementChild.remove();
+
+      ["fullscreen", "fullscreen_exit"].map((text) => {
+        const i = document.createElement("i");
+        i.classList.add("material-icons");
+        i.classList.add(text);
+        i.innerText = text;
+        return i;
+      }).forEach(btn.appendChild, btn);
+
+      return el;
+    }
+  }
+
   const init = () => {
     map.fitBounds(turf.bbox(data), {
       padding: 24,
@@ -178,6 +196,7 @@ function initMap(map, data) {
         "line-width": 4,
       },
     });
+    map.addControl(new FullscreenControl());
   };
   if (!map.loaded()) {
     map.on("load", init);
