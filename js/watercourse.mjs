@@ -141,6 +141,9 @@ function loadTemplate(ids, template) {
 }
 
 function sortByLinkage(geoJSON) {
+  if (geoJSON.features.length <= 1) {
+    return;
+  }
   const links = {};
   geoJSON.features.forEach((a) => {
     geoJSON.features.forEach((b) => {
