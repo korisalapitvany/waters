@@ -7,7 +7,9 @@ sass:
   style: compressed
 
 exclude:
+- Gemfile
+- Gemfile.lock
 - LICENSE
 - README.md
-- node_modules
-- package-lock.json
+- templates
+- third_party
