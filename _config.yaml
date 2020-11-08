@@ -11,5 +11,5 @@ exclude:
 - Gemfile.lock
 - LICENSE
 - README.md
-- templates
+- templates/*.html
 - third_party
